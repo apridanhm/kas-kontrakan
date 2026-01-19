@@ -5,20 +5,32 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\Payment;
-use App\Services\KasService;
+use App\Models\Expense;
 
 class AdminDashboardController extends Controller
 {
-    public function index(KasService $kas)
+    public function index()
     {
-        return view('admin.dashboard', [
-            'totalUsers'      => User::count(),
-            'totalCategories' => Category::count(),
-            'totalPayments'   => Payment::count(),
+        // === SUMMARY KEUANGAN ===
+        $income = Payment::where('status', 'paid')
+            ->whereHas('category', fn ($q) => $q->where('is_cash_based', 1))
+            ->sum('amount');
 
-            'totalIncome'     => $kas->totalIncome(),
-            'totalExpense'    => $kas->totalExpense(),
-            'balance'         => $kas->balance(),
-        ]);
+        $expense = Expense::sum('amount');
+        $balance = $income - $expense;
+
+        // === STATISTIK ===
+        $members    = User::where('role', 'member')->count();
+        $categories = Category::count();
+        $payments   = Payment::count();
+
+        return view('admin.dashboard', compact(
+            'income',
+            'expense',
+            'balance',
+            'members',
+            'categories',
+            'payments'
+        ));
     }
 }

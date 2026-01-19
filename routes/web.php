@@ -95,7 +95,7 @@ Route::middleware(['auth','admin'])->group(function () {
     Route::get('/admin/payments', [AdminPaymentController::class, 'index'])
         ->name('admin.payments.index');
 
-    Route::post('/admin/payments/{installment}/approve',
+    Route::post('/admin/payments/{payment}/approve',
         [AdminPaymentController::class, 'approve'])
         ->name('admin.payments.approve');
 
@@ -139,4 +139,21 @@ Route::middleware(['auth','admin'])->group(function () {
 | AUTH ROUTES (LOGIN / REGISTER)
 |--------------------------------------------------------------------------
 */
+
+// hapus user
+Route::middleware(['auth','admin'])->group(function () {
+
+    Route::get('/admin/users', [App\Http\Controllers\AdminUserController::class, 'index'])
+        ->name('admin.users.index');
+
+    Route::patch('/admin/users/{user}/approve', [App\Http\Controllers\AdminUserController::class, 'approve'])
+        ->name('admin.users.approve');
+
+    Route::patch('/admin/users/{user}/disable', [App\Http\Controllers\AdminUserController::class, 'disable'])
+        ->name('admin.users.disable');
+
+    Route::delete('/admin/users/{user}', [App\Http\Controllers\AdminUserController::class, 'destroy'])
+        ->name('admin.users.destroy');
+});
+
 require __DIR__.'/auth.php';

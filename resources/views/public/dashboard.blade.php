@@ -1,142 +1,142 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-7xl mx-auto py-6">
+<div class="max-w-6xl mx-auto px-4 py-6">
 
-    {{-- Ringkasan --}}
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white p-4 shadow rounded">
+    {{-- RINGKASAN --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white p-4 rounded shadow">
             <div class="text-sm text-gray-500">Pemasukan</div>
-            <div class="text-xl font-bold text-green-600">
+            <div class="text-lg font-bold text-green-600">
                 Rp {{ number_format($income) }}
             </div>
         </div>
 
-        <div class="bg-white p-4 shadow rounded">
+        <div class="bg-white p-4 rounded shadow">
             <div class="text-sm text-gray-500">Pengeluaran</div>
-            <div class="text-xl font-bold text-red-600">
+            <div class="text-lg font-bold text-red-600">
                 Rp {{ number_format($expense) }}
             </div>
         </div>
 
-        <div class="bg-white p-4 shadow rounded">
+        <div class="bg-white p-4 rounded shadow">
             <div class="text-sm text-gray-500">Saldo</div>
-            <div class="text-xl font-bold">
+            <div class="text-lg font-bold">
                 Rp {{ number_format($balance) }}
             </div>
         </div>
 
-        <div class="bg-white p-4 shadow rounded">
+        <div class="bg-white p-4 rounded shadow">
             <div class="text-sm text-gray-500">Jumlah Member</div>
-            <div class="text-xl font-bold">
+            <div class="text-lg font-bold">
                 {{ $members }}
             </div>
         </div>
     </div>
 
-    {{-- ===================== --}}
-    {{-- KAS --}}
-    {{-- ===================== --}}
-    <div class="bg-white shadow rounded p-4 mb-6">
-        <h2 class="font-semibold mb-3">Status Pembayaran Kas</h2>
+    {{-- STATUS PEMBAYARAN KAS --}}
+    <div class="bg-white rounded shadow mb-6 overflow-x-auto">
+        <h2 class="font-bold p-4 border-b">Status Pembayaran Kas</h2>
 
-        <table class="w-full border">
-            <tr class="bg-gray-100">
-                <th class="p-2 text-left">Kategori</th>
-                <th>Lunas</th>
-                <th>Cicil</th>
-                <th>Belum Bayar</th>
-            </tr>
+        <table class="w-full min-w-[600px]">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="p-3 text-left">Kategori</th>
+                    <th class="p-3 text-center">Lunas</th>
+                    <th class="p-3 text-center">Cicil</th>
+                    <th class="p-3 text-center">Belum Bayar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($cashStatus as $category => $row)
+                <tr class="border-t align-top">
+                    <td class="p-3 font-medium">
+                        {{ $category }}
+                    </td>
 
-            @foreach($cashStatus as $category => $c)
-            <tr class="border-t align-top">
-                <td class="p-2 font-medium">{{ $category }}</td>
-
-                {{-- LUNAS --}}
-                <td class="text-green-600 p-2">
-                    {{ $c['paid']->count() }}
-                    @if($c['paid']->count())
+                    {{-- LUNAS --}}
+                    <td class="p-3 text-center">
+                        <div class="font-bold text-green-600">
+                            {{ $row['paid']->count() }}
+                        </div>
                         <ul class="text-xs text-gray-600 mt-1">
-                            @foreach($c['paid'] as $p)
+                            @foreach($row['paid'] as $p)
                                 <li>- {{ $p->user->name }}</li>
                             @endforeach
                         </ul>
-                    @endif
-                </td>
+                    </td>
 
-                {{-- CICIL --}}
-                <td class="text-yellow-600 p-2">
-                    {{ $c['partial']->count() }}
-                    @if($c['partial']->count())
+                    {{-- CICIL --}}
+                    <td class="p-3 text-center">
+                        <div class="font-bold text-yellow-600">
+                            {{ $row['partial']->count() }}
+                        </div>
                         <ul class="text-xs text-gray-600 mt-1">
-                            @foreach($c['partial'] as $p)
+                            @foreach($row['partial'] as $p)
                                 <li>- {{ $p->user->name }}</li>
                             @endforeach
                         </ul>
-                    @endif
-                </td>
+                    </td>
 
-                {{-- BELUM BAYAR --}}
-                <td class="text-red-600 p-2">
-                    {{ $c['unpaid']->count() }}
-                    @if($c['unpaid']->count())
+                    {{-- BELUM --}}
+                    <td class="p-3 text-center">
+                        <div class="font-bold text-red-600">
+                            {{ $row['unpaid']->count() }}
+                        </div>
                         <ul class="text-xs text-gray-600 mt-1">
-                            @foreach($c['unpaid'] as $p)
+                            @foreach($row['unpaid'] as $p)
                                 <li>- {{ $p->user->name }}</li>
                             @endforeach
                         </ul>
-                    @endif
-                </td>
-            </tr>
-            @endforeach
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="4" class="p-4 text-center text-gray-500">
+                        Tidak ada data pembayaran kas
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
         </table>
     </div>
 
-    {{-- ===================== --}}
-    {{-- NON-KAS --}}
-    {{-- ===================== --}}
-    <div class="bg-white shadow rounded p-4">
-        <h2 class="font-semibold mb-3">Status Pembayaran Non-Kas</h2>
+    {{-- STATUS PEMBAYARAN NON-KAS --}}
+    <div class="bg-white rounded shadow overflow-x-auto">
+        <h2 class="font-bold p-4 border-b">Status Pembayaran Non-Kas</h2>
 
-        <table class="w-full border">
-            <tr class="bg-gray-100">
-                <th class="p-2 text-left">Kategori</th>
-                <th>Approved</th>
-                <th>Pending</th>
-            </tr>
-
-            @foreach($nonCashStatus as $category => $c)
-            <tr class="border-t align-top">
-                <td class="p-2 font-medium">{{ $category }}</td>
-
-                {{-- APPROVED --}}
-                <td class="text-green-600 p-2">
-                    {{ $c['approved']->count() }}
-                    @if($c['approved']->count())
-                        <ul class="text-xs text-gray-600 mt-1">
-                            @foreach($c['approved'] as $p)
-                                <li>- {{ $p->user->name }}</li>
-                            @endforeach
-                        </ul>
-                    @endif
-                </td>
-
-                {{-- PENDING --}}
-                <td class="text-yellow-600 p-2">
-                    {{ $c['pending']->count() }}
-                    @if($c['pending']->count())
-                        <ul class="text-xs text-gray-600 mt-1">
-                            @foreach($c['pending'] as $p)
-                                <li>- {{ $p->user->name }}</li>
-                            @endforeach
-                        </ul>
-                    @endif
-                </td>
-            </tr>
-            @endforeach
+        <table class="w-full min-w-[400px]">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="p-3 text-left">Kategori</th>
+                    <th class="p-3 text-center">Approved</th>
+                    <th class="p-3 text-center">Pending</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($nonCashStatus as $category => $row)
+                <tr class="border-t">
+                    <td class="p-3 font-medium">
+                        {{ $category }}
+                    </td>
+                    <td class="p-3 text-center font-bold text-green-600">
+                        {{ $row['approved']->count() }}
+                    </td>
+                    <td class="p-3 text-center font-bold text-yellow-600">
+                        {{ $row['pending']->count() }}
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="3" class="p-4 text-center text-gray-500">
+                        Tidak ada data non-kas
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
         </table>
 
-        <p class="text-xs text-gray-500 mt-2">
+        <p class="text-xs text-gray-500 px-4 py-3">
             Pembayaran non-kas (WiFi / Listrik) tidak mempengaruhi saldo kas.
         </p>
     </div>

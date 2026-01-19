@@ -1,29 +1,24 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Kategori Iuran</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.app')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="bg-gray-100 p-6">
+@section('content')
+<div class="max-w-5xl mx-auto py-6">
 
-    <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="text-xl font-bold">Kategori Iuran</h1>
-            <a href="{{ route('categories.create') }}"
-               class="bg-blue-600 text-white px-4 py-2 rounded">
-                + Tambah Kategori
-            </a>
-        </div>
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-xl font-bold">Kategori Iuran</h1>
 
+        <a href="{{ route('categories.create') }}"
+           class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            + Tambah Kategori
+        </a>
+    </div>
+
+    <div class="bg-white p-4 rounded shadow">
         <table class="w-full border">
-            <thead class="bg-gray-200">
+            <thead class="bg-gray-100">
                 <tr>
                     <th class="p-2 text-left">Nama</th>
-                    <th class="p-2">Default</th>
-                    <th class="p-2">Status</th>
+                    <th class="p-2 text-center">Default</th>
+                    <th class="p-2 text-center">Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,7 +29,9 @@
                             Rp {{ number_format($cat->default_amount ?? 0) }}
                         </td>
                         <td class="p-2 text-center">
-                            {{ $cat->is_active ? 'Aktif' : 'Nonaktif' }}
+                            <span class="{{ $cat->is_active ? 'text-green-600' : 'text-red-600' }}">
+                                {{ $cat->is_active ? 'Aktif' : 'Nonaktif' }}
+                            </span>
                         </td>
                     </tr>
                 @empty
@@ -48,5 +45,5 @@
         </table>
     </div>
 
-</body>
-</html>
+</div>
+@endsection

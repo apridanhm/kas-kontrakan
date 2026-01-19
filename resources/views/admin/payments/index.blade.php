@@ -1,61 +1,70 @@
 @extends('layouts.app')
 
 @section('content')
-<h1 class="text-2xl font-bold mb-6">Approval Pembayaran</h1>
+<div class="max-w-6xl mx-auto py-6">
 
-@if(session('success'))
-    <div class="bg-green-100 p-3 mb-4">{{ session('success') }}</div>
-@endif
+    <h1 class="text-xl font-bold mb-4">Approval Pembayaran Kas</h1>
 
-<table class="w-full border">
-    <thead>
-        <tr>
-            <th>User</th>
-            <th>Kategori</th>
-            <th>Nominal</th>
-            <th>Bukti</th>
-            <th>Status</th>
-            <th>Aksi</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($installments as $i)
-        <tr class="border-t">
-            <td>{{ $i->payment->user->name ?? '-' }}</td>
-            <td>{{ $i->payment->category->name ?? '-' }}</td>
-            <td>Rp {{ number_format($i->amount) }}</td>
-            <td>
-                <a href="{{ asset('storage/'.$i->proof) }}" target="_blank">
-                    Lihat Bukti
-                </a>
-            </td>
-            <td>
-                {{ $i->is_approved ? 'Approved' : 'Pending' }}
-            </td>
-            <td>
-                @if(!$i->is_approved)
-                    <form method="POST"
-                          action="{{ route('admin.payments.approve', $i) }}"
-                          class="inline">
-                        @csrf
-                        <button class="bg-green-600 text-white px-2 py-1">
-                            Approve
-                        </button>
-                    </form>
+    <div class="bg-white p-4 rounded shadow overflow-x-auto">
+        <table class="w-full border text-sm">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="p-2 text-left">User</th>
+                    <th class="p-2 text-left">Kategori</th>
+                    <th class="p-2 text-center">Nominal</th>
+                    <th class="p-2 text-center">Bukti</th>
+                    <th class="p-2 text-center">Status</th>
+                    <th class="p-2 text-center w-40">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($payments as $payment)
+                    <tr class="border-t hover:bg-gray-50">
+                        <td class="p-2">{{ $payment->user->name ?? '-' }}</td>
+                        <td class="p-2">{{ $payment->category->name }}</td>
+                        <td class="p-2 text-center">
+                            Rp {{ number_format($payment->amount) }}
+                        </td>
+                        <td class="p-2 text-center">
+                            <a href="{{ asset('storage/'.$payment->proof) }}"
+                               target="_blank"
+                               class="text-blue-600 hover:underline">
+                                Lihat Bukti
+                            </a>
+                        </td>
+                        <td class="p-2 text-center">
+                            <span class="px-2 py-1 rounded text-xs
+                                {{ $payment->status === 'approved'
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-yellow-100 text-yellow-700' }}">
+                                {{ ucfirst($payment->status) }}
+                            </span>
+                        </td>
+                        <td class="p-2 text-center">
+                            @if($payment->status !== 'approved')
+                                <form method="POST"
+                                      action="{{ route('admin.payments.approve', $payment) }}">
+                                    @csrf
+                                    <button class="text-blue-600 hover:underline">
+                                        Approve
+                                    </button>
+                                </form>
+                            @else
+                                —
+                            @endif
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6"
+                            class="p-4 text-center text-gray-500">
+                            Tidak ada pembayaran
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
-                    <form method="POST"
-                          action="{{ route('admin.payments.reject', $i) }}"
-                          class="inline">
-                        @csrf
-                        @method('DELETE')
-                        <button class="bg-red-600 text-white px-2 py-1">
-                            Reject
-                        </button>
-                    </form>
-                @endif
-            </td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
+</div>
 @endsection

@@ -2,33 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PaymentInstallment;
-use Illuminate\Http\Request;
+use App\Models\Payment;
 
 class AdminPaymentController extends Controller
 {
     public function index()
     {
-        $installments = PaymentInstallment::with('payment.user', 'payment.category')
-            ->orderByDesc('paid_at')
+        $payments = Payment::with(['user', 'category'])
+            ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('admin.payments.index', compact('installments'));
+        return view('admin.payments.index', compact('payments'));
     }
 
-    public function approve(PaymentInstallment $installment)
+    public function approve(Payment $payment)
     {
-        $installment->update([
-            'is_approved' => true,
-            'approved_at' => now(),
+        $payment->update([
+            'status'  => 'paid',
+            'paid_at'=> now(),
         ]);
-
-        return back()->with('success', 'Pembayaran disetujui');
+    
+        return back()->with('success', 'Pembayaran berhasil di-approve');
     }
+    
 
-    public function reject(PaymentInstallment $installment)
+    public function reject(Payment $payment)
     {
-        $installment->delete();
+        $payment->delete();
 
         return back()->with('success', 'Pembayaran ditolak');
     }
